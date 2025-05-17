@@ -1,0 +1,12 @@
+package org.example.clothingrecommendationsystem.model.recommendation;
+
+
+import java.util.List;
+
+public interface IRecommendationRepository {
+    List<Recommendation> getAll();
+    Recommendation getById(Long id);
+    Recommendation create(Recommendation entityToCreate);
+    Recommendation edit(Recommendation entityToUpdate);
+    void delete(Long id);
+}
