@@ -17,4 +17,5 @@ public class Recommendation extends BaseModel {
     private Person person;
     private List<GeneratedImage> generatedImages;
     private List<PieceOfClothes> recommendedClothes;
+    private Boolean favorite;
 }

@@ -1,6 +1,7 @@
 package org.example.clothingrecommendationsystem.orchestrators.recommendation;
 
 import org.example.clothingrecommendationsystem.model.generatedimage.IGeneratedImageOrchestrator;
+import org.example.clothingrecommendationsystem.model.person.IPersonOrchestrator;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationGenerator;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationOrchestrator;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationRepository;
@@ -15,15 +16,17 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
     private final IRecommendationRepository recommendationRepository;
     private final IGeneratedImageOrchestrator generatedImageOrchestrator;
     private final IRecommendationGenerator recommendationGenerator;
+    private final IPersonOrchestrator personOrchestrator;
 
     @Autowired
     public RecommendationOrchestrator(IRecommendationRepository recommendationRepository,
                                       IGeneratedImageOrchestrator generatedImageOrchestrator,
-                                      IRecommendationGenerator recommendationGenerator) {
+                                      IRecommendationGenerator recommendationGenerator, IPersonOrchestrator personOrchestrator) {
 
         this.recommendationRepository = recommendationRepository;
         this.generatedImageOrchestrator = generatedImageOrchestrator;
         this.recommendationGenerator = recommendationGenerator;
+        this.personOrchestrator = personOrchestrator;
     }
 
     @Override
@@ -38,7 +41,9 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
 
     @Override
     public Recommendation create(Recommendation entityToCreate) {
+        entityToCreate.setPerson(personOrchestrator.getById(entityToCreate.getPerson().getId()));
         entityToCreate.setRecommendedClothes(recommendationGenerator.generateRecommendation(entityToCreate.getUserPrompt(), entityToCreate.getPerson().getUser().getId()).getRecommendedClothes());
+        System.out.println(entityToCreate);
         entityToCreate.setGeneratedImages(List.of(generatedImageOrchestrator.generateImage(entityToCreate.getRecommendedClothes(), entityToCreate.getPerson())));
         return recommendationRepository.create(entityToCreate);
     }
@@ -53,5 +58,10 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
         Recommendation existingRecommendation = getById(id);
         recommendationRepository.delete(id);
         return existingRecommendation;
+    }
+
+    @Override
+    public List<Recommendation> getAllByPersonId(Long id) {
+        return recommendationRepository.getAllByPersonId(id);
     }
 }

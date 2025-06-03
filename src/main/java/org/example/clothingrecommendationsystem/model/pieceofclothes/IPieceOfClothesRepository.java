@@ -1,8 +1,5 @@
 package org.example.clothingrecommendationsystem.model.pieceofclothes;
 
-
-import org.example.clothingrecommendationsystem.infrastructure.persistence.pieceofclothes.PieceOfClothesEntity;
-
 import java.util.List;
 
 public interface IPieceOfClothesRepository {

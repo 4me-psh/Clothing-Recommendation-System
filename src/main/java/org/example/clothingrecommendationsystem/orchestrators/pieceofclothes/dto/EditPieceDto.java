@@ -10,8 +10,9 @@ public class EditPieceDto {
     private String name;
     private String color;
     private String material;
-    private PieceOfClothes.Style style;
+    private List<PieceOfClothes.Style> styles;
     private String pieceCategory;
     private List<PieceOfClothes.TemperatureCategory> temperatureCategories;
     private List<String> characteristics;
+    private Boolean useRemovedBg;
 }

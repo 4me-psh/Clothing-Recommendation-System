@@ -1,8 +1,10 @@
 package org.example.clothingrecommendationsystem.orchestrators;
 
 import org.example.clothingrecommendationsystem.model.person.Person;
+import org.example.clothingrecommendationsystem.model.recommendation.Recommendation;
 import org.example.clothingrecommendationsystem.model.user.User;
 import org.example.clothingrecommendationsystem.orchestrators.person.dto.CreatePersonDto;
+import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.CreateRecommendationDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.CreateUserDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.EditUserDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.UserDto;
@@ -18,7 +20,7 @@ public class OrchestratorMapperConfig {
     public ModelMapper modelMapperOrchestrator() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setFieldMatchingEnabled(true)
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE).setCollectionsMergeEnabled(false);
 
         modelMapper.createTypeMap(User.class, UserDto.class);
 
@@ -55,6 +57,19 @@ public class OrchestratorMapperConfig {
                 skip(destination.getCreatedBy());
                 skip(destination.getUpdatedBy());
                 map().getUser().setId(source.getUserId());
+
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<CreateRecommendationDto, Recommendation>() {
+            @Override
+            protected void configure() {
+                skip(destination.getId());
+                skip(destination.getCreatedAt());
+                skip(destination.getUpdatedAt());
+                skip(destination.getCreatedBy());
+                skip(destination.getUpdatedBy());
+
 
             }
         });

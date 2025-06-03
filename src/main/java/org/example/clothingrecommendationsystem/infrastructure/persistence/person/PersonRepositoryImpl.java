@@ -62,4 +62,11 @@ public class PersonRepositoryImpl implements IPersonRepository {
         assert entity != null;
         personRepository.delete(entity);
     }
+
+    @Override
+    public Person getByUserId(Long userId) {
+        PersonEntity personEntity = personRepository.findById(userId).orElse(null);
+        assert personEntity != null;
+        return modelMapper.map(personEntity, Person.class);
+    }
 }

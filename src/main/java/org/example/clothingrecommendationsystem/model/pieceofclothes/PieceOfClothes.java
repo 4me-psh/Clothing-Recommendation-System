@@ -19,14 +19,20 @@ public class PieceOfClothes extends BaseModel {
     private String name;
     private String color;
     private String material;
-    private Style style;
+    private List<Style> styles;
     private String pathToPhoto;
-    private String pieceCategory;
+    private String pathToRemovedBgPhoto;
+    private PieceCategory pieceCategory;
     private List<TemperatureCategory> temperatureCategories;
     private List<String> characteristics;
+    private Boolean useRemovedBg;
 
     public enum Style {
         Sporty, Casual, Business, Evening
+    }
+
+    public enum PieceCategory {
+        Single, Outerlayer, Innerlayer, Bottom, Headwear, Footwear, Accessories
     }
 
     public enum TemperatureCategory {

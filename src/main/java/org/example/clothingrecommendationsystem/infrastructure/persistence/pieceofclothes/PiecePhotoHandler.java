@@ -32,7 +32,8 @@ public class PiecePhotoHandler implements IPiecePhotoHandler {
 
     @Override
     public String deletePiecePhoto(String pathToPhoto) {
-        Path path = Paths.get(uploadDir, pathToPhoto);
+
+        Path path = Paths.get(pathToPhoto);
         try {
             Files.delete(path);
         } catch (IOException e) {

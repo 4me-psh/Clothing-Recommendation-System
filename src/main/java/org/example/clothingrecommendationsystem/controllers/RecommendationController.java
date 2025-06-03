@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationOrchestrator;
 import org.example.clothingrecommendationsystem.model.recommendation.Recommendation;
 import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.CreateRecommendationDto;
+import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.EditRecommendationDto;
 import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.RecommendationDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,16 @@ public class RecommendationController {
         this.modelMapper = modelMapper;
     }
 
-//    @Operation(summary = "Get all Persons", description = "Gets all Persons")
-//    @GetMapping
-//    public ResponseEntity<List<PersonDto>> getAllPersons() {
-//        List<Person> entities = personOrchestrator.getAll();
-//        List<PersonDto> personDtos = new ArrayList<>(List.of());
-//        for (Person entity : entities) {
-//            personDtos.add(modelMapper.map(entity, PersonDto.class));
-//        }
-//        return ResponseEntity.ok(personDtos);
-//    }
+    @Operation(summary = "Get all Recommendations", description = "Gets all Recommendations")
+    @GetMapping
+    public ResponseEntity<List<RecommendationDto>> getAllRecommendations() {
+        List<Recommendation> entities = recommendationOrchestrator.getAll();
+        List<RecommendationDto> recommendationDtos = new ArrayList<>(List.of());
+        for (Recommendation entity : entities) {
+            recommendationDtos.add(modelMapper.map(entity, RecommendationDto.class));
+        }
+        return ResponseEntity.ok(recommendationDtos);
+    }
 
     @Operation(summary = "Generate a new Recommendation", description = "Generates a new Recommendation")
     @PostMapping
@@ -58,14 +59,14 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationDto);
     }
 
-//    @Operation(summary = "Update Person", description = "Updates the Person by their Id")
-//    @PutMapping("/{id}")
-//    public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody EditPersonDto personDto) {
-//        Person editEntity = personOrchestrator.getById(id);
-//        modelMapper.map(personDto, editEntity);
-//        personOrchestrator.edit(editEntity);
-//        return ResponseEntity.ok("ok edit");
-//    }
+    @Operation(summary = "Update Recommendation", description = "Updates the Recommendation by its Id")
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateRecommendation(@PathVariable Long id, @RequestBody EditRecommendationDto recommendationDto) {
+        Recommendation editEntity = recommendationOrchestrator.getById(id);
+        modelMapper.map(recommendationDto, editEntity);
+        recommendationOrchestrator.edit(editEntity);
+        return ResponseEntity.ok("ok edit");
+    }
 
     @Operation(summary = "Delete Recommendation", description = "Deletes the Recommendation by their Id")
     @DeleteMapping("/{id}")
@@ -75,4 +76,14 @@ public class RecommendationController {
         return ResponseEntity.ok("ok delete");
     }
 
+    @Operation(summary = "Get all Recommendations By Person Id", description = "Gets all Recommendations By Person Id")
+    @GetMapping("/person/{id}")
+    public ResponseEntity<List<RecommendationDto>> getAllRecommendationsByPersonId(@PathVariable Long id) {
+        List<Recommendation> entities = recommendationOrchestrator.getAllByPersonId(id);
+        List<RecommendationDto> recommendationDtos = new ArrayList<>(List.of());
+        for (Recommendation entity : entities) {
+            recommendationDtos.add(modelMapper.map(entity, RecommendationDto.class));
+        }
+        return ResponseEntity.ok(recommendationDtos);
+    }
 }

@@ -16,9 +16,9 @@ public class GeneratedImageEntity extends BaseModelEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generatedImage_seq")
     @SequenceGenerator(name = "generatedImage_seq", sequenceName = "generatedImage_seq", allocationSize = 1)
     private Long id;
-    private String pathToImage;
     @ManyToOne(fetch = FetchType.LAZY)
     private PersonEntity personEntity;
+    private String pathToImage;
 
     @PrePersist
     protected void onCreate() {

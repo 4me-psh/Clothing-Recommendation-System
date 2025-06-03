@@ -8,4 +8,5 @@ public interface IPersonOrchestrator {
     Person create(Person entityToCreate);
     Person edit(Person entityToUpdate);
     Person delete(Long id);
+    Person getByUserId(Long userId);
 }

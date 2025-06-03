@@ -61,5 +61,16 @@ public class RecommendationRepositoryImpl implements IRecommendationRepository {
         recommendationRepository.delete(entity);
     }
 
+    @Override
+    public List<Recommendation> getAllByPersonId(Long id) {
+        List<Recommendation> recommendations = new ArrayList<>();
+        List<RecommendationEntity> recommendationEntities = recommendationRepository.findAllByPersonEntityId(id);
+        for (RecommendationEntity recommendationEntity : recommendationEntities) {
+            recommendations.add(modelMapper.map(recommendationEntity, Recommendation.class));
+        }
+        return recommendations;
+    }
+
+
 }
 

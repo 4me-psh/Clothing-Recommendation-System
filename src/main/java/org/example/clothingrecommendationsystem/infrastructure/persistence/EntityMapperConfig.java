@@ -17,7 +17,7 @@ public class EntityMapperConfig {
     public ModelMapper modelMapperEntity() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setFieldMatchingEnabled(true)
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE).setCollectionsMergeEnabled(false);
 
         //User Mapping
         modelMapper.createTypeMap(User.class, UserEntity.class);

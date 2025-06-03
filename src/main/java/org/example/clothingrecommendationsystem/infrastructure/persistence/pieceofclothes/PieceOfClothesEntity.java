@@ -21,9 +21,12 @@ public class PieceOfClothesEntity extends BaseModelEntity{
     private String name;
     private String color;
     private String material;
-    private PieceOfClothes.Style style;
+    @Enumerated(EnumType.STRING)
+    private List<PieceOfClothes.Style> styles;
     private String pathToPhoto;
-    private String pieceCategory;
+    private String pathToRemovedBgPhoto;
+    @Enumerated(EnumType.STRING)
+    private PieceOfClothes.PieceCategory pieceCategory;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "clothing_temperature_categories", joinColumns = @JoinColumn(name = "clothing_id"))
     @Enumerated(EnumType.STRING)
@@ -33,11 +36,13 @@ public class PieceOfClothesEntity extends BaseModelEntity{
     private List<String> characteristics;
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity userEntity;
+    private Boolean useRemovedBg;
 
     @PrePersist
     protected void onCreate() {
         this.setCreatedAt(new Date());
         this.setCreatedBy(this.getUserEntity().getEmail());
+        this.useRemovedBg = false;
     }
 
     @PreUpdate

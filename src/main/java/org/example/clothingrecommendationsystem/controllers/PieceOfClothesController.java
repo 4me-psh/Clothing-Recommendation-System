@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.clothingrecommendationsystem.model.pieceofclothes.IPieceOfClothesOrchestrator;
 import org.example.clothingrecommendationsystem.model.pieceofclothes.PieceOfClothes;
+import org.example.clothingrecommendationsystem.orchestrators.pieceofclothes.dto.EditPieceDto;
 import org.example.clothingrecommendationsystem.orchestrators.pieceofclothes.dto.PieceDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +32,19 @@ public class PieceOfClothesController {
         this.modelMapper = modelMapper;
     }
 
-//    @Operation(summary = "Get all Clothes", description = "Gets all Clothes")
-//    @GetMapping
-//    public ResponseEntity<List<UserDto>> getAllUsers() {
-//        List<User> entities = userOrchestrator.getAll();
-//        List<UserDto> userDtos = new ArrayList<>(List.of());
-//        for (User entity : entities) {
-//            userDtos.add(modelMapper.map(entity, UserDto.class));
-//        }
-//        return ResponseEntity.ok(userDtos);
-//    }
+    @Operation(summary = "Get all Clothes", description = "Gets all Clothes")
+    @GetMapping(produces = "application/json; charset=UTF-8")
+    public ResponseEntity<List<PieceDto>> getAllPieces() {
+        List<PieceOfClothes> entities = pieceOfClothesOrchestrator.getAll();
+        List<PieceDto> pieceDtos = new ArrayList<>(List.of());
+        for (PieceOfClothes entity : entities) {
+            pieceDtos.add(modelMapper.map(entity, PieceDto.class));
+        }
+        return ResponseEntity.ok(pieceDtos);
+    }
 
     @Operation(summary = "Add a new Piece", description = "Adds a new Piece")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
     public ResponseEntity<PieceDto> createPiece(@RequestParam("userId") Long userId,
                                                 @RequestParam("file") MultipartFile file) {
         PieceOfClothes createdPiece = pieceOfClothesOrchestrator.handlePieceOfClothes(userId, file);
@@ -52,29 +53,41 @@ public class PieceOfClothesController {
     }
 
     @Operation(summary = "Get A Piece by Id", description = "Gets the Piece by its Id")
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PieceDto> getPieceById(@PathVariable Long id) {
         PieceOfClothes entity = pieceOfClothesOrchestrator.getById(id);
         PieceDto pieceDto = modelMapper.map(entity, PieceDto.class);
         return ResponseEntity.ok(pieceDto);
     }
-//
-//    @Operation(summary = "Update User", description = "Updates the User by their Id")
-//    @PutMapping("/{id}")
-//    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody EditUserDto userDto) {
-//        User editEntity = userOrchestrator.getById(id);
-//        modelMapper.map(userDto, editEntity);
-//        userOrchestrator.edit(editEntity);
-//        return ResponseEntity.ok("ok edit");
-//    }
-//
-//    @Operation(summary = "Delete User", description = "Deletes the User by their Id")
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-//        User entityToDelete = userOrchestrator.getById(id);
-//        userOrchestrator.delete(id);
-//        return ResponseEntity.ok("ok delete");
-//    }
+
+    @Operation(summary = "Get All Pieces From User", description = "Gets All Pieces From a User by Id")
+    @GetMapping(path = "/user/{id}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<List<PieceDto>> getAllPiecesByUserId(@PathVariable Long id) {
+
+        List<PieceOfClothes> entities = pieceOfClothesOrchestrator.getAllByUserId(id);
+        List<PieceDto> pieceDtos = new ArrayList<>();
+        for(PieceOfClothes piece : entities) {
+            pieceDtos.add(modelMapper.map(piece, PieceDto.class));
+        }
+        return ResponseEntity.ok(pieceDtos);
+    }
+
+    @Operation(summary = "Update Piece", description = "Updates the Piece by its Id")
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updatePiece(@PathVariable Long id, @RequestBody EditPieceDto pieceDto) {
+        PieceOfClothes editEntity = pieceOfClothesOrchestrator.getById(id);
+        modelMapper.map(pieceDto, editEntity);
+        pieceOfClothesOrchestrator.edit(editEntity);
+        return ResponseEntity.ok("ok edit");
+    }
+
+    @Operation(summary = "Delete Piece", description = "Deletes the Piece by its Id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePiece(@PathVariable Long id) {
+        PieceOfClothes entityToDelete = pieceOfClothesOrchestrator.getById(id);
+        pieceOfClothesOrchestrator.delete(id);
+        return ResponseEntity.ok("ok delete");
+    }
 
 
 

@@ -1,12 +1,12 @@
 package org.example.clothingrecommendationsystem.model.generatedimage;
 
-import org.example.clothingrecommendationsystem.model.person.Person;
-import org.example.clothingrecommendationsystem.model.pieceofclothes.PieceOfClothes;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface IGeneratedImageHandler {
-    GeneratedImage generateImage(String generationPrompt,
-                                 List<PieceOfClothes> piecesOfClothesToGenerate,
-                                 Person personToGenerate);
+    String addGeneratedImage(String base64Image);
+    String deleteGeneratedImage(String pathToPhoto);
+    List<String> getAllGeneratedImagesByUser(List<String> pathsToPhotos);
+    List<String> getAllGeneratedImages();
 }

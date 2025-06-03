@@ -11,6 +11,7 @@ public class ExternalConfig {
     private String pythonPath;
     private String clothingPhotosPath;
     private String generatedImagesPath;
+    private String removedBGPhotosPath;
     private String weatherApiKey;
     private String weatherApiUrl;
 }

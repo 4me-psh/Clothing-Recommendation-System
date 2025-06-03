@@ -1,6 +1,5 @@
 package org.example.clothingrecommendationsystem.model.recommendation;
 
-
 import java.util.List;
 
 public interface IRecommendationRepository {
@@ -9,4 +8,5 @@ public interface IRecommendationRepository {
     Recommendation create(Recommendation entityToCreate);
     Recommendation edit(Recommendation entityToUpdate);
     void delete(Long id);
+    List<Recommendation> getAllByPersonId(Long id);
 }

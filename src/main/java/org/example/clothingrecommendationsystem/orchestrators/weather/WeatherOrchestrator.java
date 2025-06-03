@@ -17,4 +17,9 @@ public class WeatherOrchestrator implements IWeatherOrchestrator {
     public Weather getByCity(String city) {
         return weatherHandler.getByCity(city);
     }
+
+    @Override
+    public Weather getByCoordinates(String coordinates) {
+        return weatherHandler.getByCoordinates(coordinates);
+    }
 }

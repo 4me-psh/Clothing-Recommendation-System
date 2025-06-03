@@ -26,6 +26,7 @@ public class RecommendationEntity extends BaseModelEntity {
     private List<GeneratedImageEntity> generatedImageEntities;
     @OneToMany
     private List<PieceOfClothesEntity> recommendedClothesEntities;
+    private Boolean favorite;
 
     @PrePersist
     protected void onCreate() {

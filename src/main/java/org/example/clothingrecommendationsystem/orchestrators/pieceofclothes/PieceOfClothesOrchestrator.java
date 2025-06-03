@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
@@ -17,16 +16,18 @@ public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
     private final IPiecePhotoClassifier piecePhotoClassifier;
     private final IPiecePhotoHandler piecePhotoHandler;
     private final IUserOrchestrator userOrchestrator;
+    private final IPieceRemoveBgHandler pieceRemoveBgHandler;
 
     @Autowired
     public PieceOfClothesOrchestrator(IPieceOfClothesRepository pieceOfClothesRepository,
                                       IPiecePhotoClassifier piecePhotoClassifier,
                                       IPiecePhotoHandler piecePhotoHandler,
-                                      IUserOrchestrator userOrchestrator) {
+                                      IUserOrchestrator userOrchestrator, IPieceRemoveBgHandler pieceRemoveBgHandler) {
         this.pieceOfClothesRepository = pieceOfClothesRepository;
         this.piecePhotoClassifier = piecePhotoClassifier;
         this.piecePhotoHandler = piecePhotoHandler;
         this.userOrchestrator = userOrchestrator;
+        this.pieceRemoveBgHandler = pieceRemoveBgHandler;
     }
 
     @Override
@@ -52,6 +53,8 @@ public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
     @Override
     public PieceOfClothes delete(Long id) {
         PieceOfClothes existingPiece = getById(id);
+        piecePhotoHandler.deletePiecePhoto(existingPiece.getPathToPhoto());
+        piecePhotoHandler.deletePiecePhoto(existingPiece.getPathToRemovedBgPhoto());
         pieceOfClothesRepository.delete(id);
         return existingPiece;
     }
@@ -59,17 +62,14 @@ public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
     @Override
     public PieceOfClothes handlePieceOfClothes(Long userId, MultipartFile photo){
         String pathToSavedPhoto = piecePhotoHandler.addPiecePhoto(photo);
-        Map<String, Object> classificationOfPhoto = piecePhotoClassifier.classifyPiecePhoto(pathToSavedPhoto);
+        String pathToRemovedBgPhoto = pieceRemoveBgHandler.removeBg(pathToSavedPhoto);
+        PieceOfClothes pieceToSave = piecePhotoClassifier.classifyPiecePhoto(pathToRemovedBgPhoto);
+
         User user = userOrchestrator.getById(userId);
-        PieceOfClothes pieceToSave = new PieceOfClothes();
+
         pieceToSave.setUser(user);
-        pieceToSave.setName((String) classificationOfPhoto.get("name"));
-        pieceToSave.setColor((String) classificationOfPhoto.get("color"));
-        pieceToSave.setMaterial((String) classificationOfPhoto.get("material"));
-        pieceToSave.setStyle(PieceOfClothes.Style.valueOf((String) classificationOfPhoto.get("style")));
-        pieceToSave.setTemperatureCategories((List<PieceOfClothes.TemperatureCategory>) classificationOfPhoto.get("temperatureCategories"));
-        pieceToSave.setCharacteristics((List<String>) classificationOfPhoto.get("characteristics"));
         pieceToSave.setPathToPhoto(pathToSavedPhoto);
+        pieceToSave.setPathToRemovedBgPhoto(pathToRemovedBgPhoto);
 
         return create(pieceToSave);
     }

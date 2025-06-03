@@ -8,4 +8,5 @@ public interface IPersonRepository {
     Person create(Person entityToCreate);
     Person edit(Person entityToUpdate);
     void delete(Long id);
+    Person getByUserId(Long userId);
 }

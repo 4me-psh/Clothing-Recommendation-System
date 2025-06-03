@@ -8,4 +8,5 @@ public interface IRecommendationOrchestrator {
     Recommendation create(Recommendation entityToCreate);
     Recommendation edit(Recommendation entityToUpdate);
     Recommendation delete(Long id);
+    List<Recommendation> getAllByPersonId(Long id);
 }

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Lazy
 public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
-
+    PersonEntity findByUserEntity_Id(Long userId);
 }

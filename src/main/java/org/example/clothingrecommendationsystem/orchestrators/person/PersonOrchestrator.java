@@ -48,4 +48,9 @@ public class PersonOrchestrator implements IPersonOrchestrator {
         personRepository.delete(id);
         return existingPerson;
     }
+
+    @Override
+    public Person getByUserId(Long userId) {
+        return personRepository.getByUserId(userId);
+    }
 }

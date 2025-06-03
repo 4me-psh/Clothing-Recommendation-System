@@ -14,4 +14,5 @@ public class RecommendationDto {
     private Person person;
     private List<GeneratedImage> generatedImages;
     private List<PieceOfClothes> recommendedClothes;
+    private Boolean favorite;
 }
