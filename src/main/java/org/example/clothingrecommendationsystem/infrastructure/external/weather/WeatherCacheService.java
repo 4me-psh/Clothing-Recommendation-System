@@ -11,7 +11,7 @@ import java.time.Duration;
 public class WeatherCacheService {
 
     private final Cache<Long, Weather> cache = Caffeine.newBuilder()
-            .expireAfterWrite(Duration.ofMinutes(15))
+            .expireAfterWrite(Duration.ofMinutes(30))
             .maximumSize(5000)
             .build();
 
