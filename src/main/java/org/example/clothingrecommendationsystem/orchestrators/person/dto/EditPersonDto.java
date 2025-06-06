@@ -10,4 +10,5 @@ public class EditPersonDto {
     private String hairColor;
     private double height;
     private int age;
+    private String pathToPerson;
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,26 @@ public class PersonController {
         Person entityToDelete = personOrchestrator.getById(id);
         personOrchestrator.delete(id);
         return ResponseEntity.ok("ok delete");
+    }
+
+    @Operation(summary = "Add a new Person with photo", description = "Adds a new Person photo")
+    @PostMapping
+    public ResponseEntity<PersonDto> createPersonWithPhoto(@RequestBody CreatePersonDto personDto,
+                                                  @RequestParam MultipartFile file) {
+        Person personToCreate = modelMapper.map(personDto, Person.class);
+        Person createdPerson = personOrchestrator.createWithPhoto(personToCreate, file);
+        PersonDto createdPersonDto = modelMapper.map(createdPerson, PersonDto.class);
+        return ResponseEntity.ok(createdPersonDto);
+    }
+
+    @Operation(summary = "Update Person with Photo", description = "Updates the Person with Photo by their Id")
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody EditPersonDto personDto,
+                                               MultipartFile file) {
+        Person editEntity = personOrchestrator.getById(id);
+        modelMapper.map(personDto, editEntity);
+        personOrchestrator.editWithPhoto(editEntity, file);
+        return ResponseEntity.ok("ok edit");
     }
 
 }

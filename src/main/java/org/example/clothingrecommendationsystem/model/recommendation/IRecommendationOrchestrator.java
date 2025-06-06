@@ -9,4 +9,6 @@ public interface IRecommendationOrchestrator {
     Recommendation edit(Recommendation entityToUpdate);
     Recommendation delete(Long id);
     List<Recommendation> getAllByPersonId(Long id);
+    Recommendation generateImage(Recommendation entityToAddImage);
+    List<Recommendation> getAllByPersonEntityIdAndFavorite(Long id);
 }

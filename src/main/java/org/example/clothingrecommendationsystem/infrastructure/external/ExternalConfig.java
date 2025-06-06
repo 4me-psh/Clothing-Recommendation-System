@@ -14,4 +14,5 @@ public class ExternalConfig {
     private String removedBGPhotosPath;
     private String weatherApiKey;
     private String weatherApiUrl;
+    private String personPath;
 }

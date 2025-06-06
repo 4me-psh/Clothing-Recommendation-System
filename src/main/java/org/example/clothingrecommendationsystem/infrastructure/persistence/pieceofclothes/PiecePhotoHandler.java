@@ -5,11 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.*;
-
 import java.util.List;
-import java.util.UUID;
+
+import static org.example.clothingrecommendationsystem.infrastructure.persistence.PhotoHandler.addPhoto;
+import static org.example.clothingrecommendationsystem.infrastructure.persistence.PhotoHandler.deletePhoto;
 
 @Service
 public class PiecePhotoHandler implements IPiecePhotoHandler {
@@ -19,28 +18,15 @@ public class PiecePhotoHandler implements IPiecePhotoHandler {
 
     @Override
     public String addPiecePhoto(MultipartFile multipartFile) {
-        String fileName = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
-        Path path = Paths.get(uploadDir, fileName);
-        try {
-            Files.createDirectories(path.getParent());
-            Files.write(path, multipartFile.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException("Не вдалося зберегти фото", e);
-        }
-        return path.toString();
+        return addPhoto(multipartFile, uploadDir);
     }
 
     @Override
     public String deletePiecePhoto(String pathToPhoto) {
-
-        Path path = Paths.get(pathToPhoto);
-        try {
-            Files.delete(path);
-        } catch (IOException e) {
-            throw new RuntimeException("Не вдалося видалити фото", e);
-        }
-        return path.toString();
+        return deletePhoto(pathToPhoto);
     }
+
+
 
     @Override
     public List<String> getAllPiecePhotosByUser(List<String> pathsToPhotos) {

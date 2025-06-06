@@ -43,8 +43,6 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
     public Recommendation create(Recommendation entityToCreate) {
         entityToCreate.setPerson(personOrchestrator.getById(entityToCreate.getPerson().getId()));
         entityToCreate.setRecommendedClothes(recommendationGenerator.generateRecommendation(entityToCreate.getUserPrompt(), entityToCreate.getPerson().getUser().getId()).getRecommendedClothes());
-        System.out.println(entityToCreate);
-        entityToCreate.setGeneratedImages(List.of(generatedImageOrchestrator.generateImage(entityToCreate.getRecommendedClothes(), entityToCreate.getPerson())));
         return recommendationRepository.create(entityToCreate);
     }
 
@@ -64,4 +62,16 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
     public List<Recommendation> getAllByPersonId(Long id) {
         return recommendationRepository.getAllByPersonId(id);
     }
+
+    @Override
+    public Recommendation generateImage(Recommendation entityToGenerate) {
+        entityToGenerate.setGeneratedImages(List.of(generatedImageOrchestrator.generateImage(entityToGenerate.getRecommendedClothes(), entityToGenerate.getPerson())));
+        return edit(entityToGenerate);
+    }
+
+    @Override
+    public List<Recommendation> getAllByPersonEntityIdAndFavorite(Long id) {
+        return recommendationRepository.getAllByPersonEntityIdAndFavorite(id);
+    }
+
 }

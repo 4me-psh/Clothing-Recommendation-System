@@ -86,4 +86,23 @@ public class RecommendationController {
         }
         return ResponseEntity.ok(recommendationDtos);
     }
+
+    @Operation(summary = "Generate Image in Recommendation", description = "Generates Image in the Recommendation by its Id")
+    @PutMapping("/generate/{id}")
+    public ResponseEntity<String> generateImageInRecommendation(@PathVariable Long id) {
+        Recommendation editEntity = recommendationOrchestrator.getById(id);
+        recommendationOrchestrator.generateImage(editEntity);
+        return ResponseEntity.ok("ok image added");
+    }
+
+    @Operation(summary = "Get all Favorite Recommendations By Person Id", description = "Gets all Favorite Recommendations By Person Id")
+    @GetMapping("/person/favorites/{id}")
+    public ResponseEntity<List<RecommendationDto>> getAllFavoriteRecommendationsByPersonId(@PathVariable Long id) {
+        List<Recommendation> entities = recommendationOrchestrator.getAllByPersonEntityIdAndFavorite(id);
+        List<RecommendationDto> recommendationDtos = new ArrayList<>(List.of());
+        for (Recommendation entity : entities) {
+            recommendationDtos.add(modelMapper.map(entity, RecommendationDto.class));
+        }
+        return ResponseEntity.ok(recommendationDtos);
+    }
 }

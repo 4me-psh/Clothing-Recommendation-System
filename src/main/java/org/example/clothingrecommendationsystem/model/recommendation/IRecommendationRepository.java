@@ -9,4 +9,5 @@ public interface IRecommendationRepository {
     Recommendation edit(Recommendation entityToUpdate);
     void delete(Long id);
     List<Recommendation> getAllByPersonId(Long id);
+    List<Recommendation> getAllByPersonEntityIdAndFavorite(Long id);
 }

@@ -19,6 +19,7 @@ public class Person extends BaseModel {
     private String hairColor;
     private double height;
     private int age;
+    private String pathToPerson;
 
     public enum Gender {
         MALE, FEMALE

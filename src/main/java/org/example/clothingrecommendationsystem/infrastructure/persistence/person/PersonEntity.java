@@ -22,6 +22,7 @@ public class PersonEntity extends BaseModelEntity {
     private int age;
     @OneToOne(fetch = FetchType.LAZY)
     private UserEntity userEntity;
+    private String pathToPerson;
 
     @PrePersist
     protected void onCreate() {
