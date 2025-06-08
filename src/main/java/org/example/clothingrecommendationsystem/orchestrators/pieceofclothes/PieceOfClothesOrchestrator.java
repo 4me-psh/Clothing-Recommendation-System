@@ -1,6 +1,7 @@
 package org.example.clothingrecommendationsystem.orchestrators.pieceofclothes;
 
 import org.example.clothingrecommendationsystem.model.pieceofclothes.*;
+import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationOrchestrator;
 import org.example.clothingrecommendationsystem.model.user.IUserOrchestrator;
 import org.example.clothingrecommendationsystem.model.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,19 @@ public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
     private final IPiecePhotoHandler piecePhotoHandler;
     private final IUserOrchestrator userOrchestrator;
     private final IPieceRemoveBgHandler pieceRemoveBgHandler;
+    private final IRecommendationOrchestrator recommendationOrchestrator;
 
     @Autowired
     public PieceOfClothesOrchestrator(IPieceOfClothesRepository pieceOfClothesRepository,
                                       IPiecePhotoClassifier piecePhotoClassifier,
                                       IPiecePhotoHandler piecePhotoHandler,
-                                      IUserOrchestrator userOrchestrator, IPieceRemoveBgHandler pieceRemoveBgHandler) {
+                                      IUserOrchestrator userOrchestrator, IPieceRemoveBgHandler pieceRemoveBgHandler, IRecommendationOrchestrator recommendationOrchestrator) {
         this.pieceOfClothesRepository = pieceOfClothesRepository;
         this.piecePhotoClassifier = piecePhotoClassifier;
         this.piecePhotoHandler = piecePhotoHandler;
         this.userOrchestrator = userOrchestrator;
         this.pieceRemoveBgHandler = pieceRemoveBgHandler;
+        this.recommendationOrchestrator = recommendationOrchestrator;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class PieceOfClothesOrchestrator implements IPieceOfClothesOrchestrator {
         PieceOfClothes existingPiece = getById(id);
         piecePhotoHandler.deletePiecePhoto(existingPiece.getPathToPhoto());
         piecePhotoHandler.deletePiecePhoto(existingPiece.getPathToRemovedBgPhoto());
+        recommendationOrchestrator.deleteAllByPieceId(id);
         pieceOfClothesRepository.delete(id);
         return existingPiece;
     }

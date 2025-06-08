@@ -145,7 +145,7 @@ public class ColorDictionary {
 
     public static final Map<String, List<String>> COMPATIBLE_BASE = Map.ofEntries(
             Map.entry("білий", List.of("бежевий", "сірий", "чорний")),
-            Map.entry("чорний", List.of("білий", "сірий", "червоний")),
+            Map.entry("чорний", List.of("білий", "сірий", "бежевий")),
             Map.entry("сірий", List.of("білий", "чорний", "рожевий")),
             Map.entry("червоний", List.of("чорний", "білий", "рожевий")),
             Map.entry("рожевий", List.of("сірий", "білий", "червоний")),

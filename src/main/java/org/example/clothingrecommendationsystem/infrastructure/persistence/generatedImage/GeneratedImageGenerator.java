@@ -70,7 +70,6 @@ public class GeneratedImageGenerator implements IGeneratedImageGenerator {
         return json.get("base64_image").asText();
     }
 
-
     public String generateImageStable(List<PieceOfClothes> clothes, Person person) {
 
         List<Map<String, Object>> clothesAttributes = clothes.stream().map(piece -> {

@@ -1,5 +1,7 @@
 package org.example.clothingrecommendationsystem.model.recommendation;
 
+import org.example.clothingrecommendationsystem.infrastructure.persistence.recommendation.RecommendationEntity;
+
 import java.util.List;
 
 public interface IRecommendationOrchestrator {
@@ -11,4 +13,5 @@ public interface IRecommendationOrchestrator {
     List<Recommendation> getAllByPersonId(Long id);
     Recommendation generateImage(Recommendation entityToAddImage);
     List<Recommendation> getAllByPersonEntityIdAndFavorite(Long id);
+    void deleteAllByPieceId(Long pieceId);
 }

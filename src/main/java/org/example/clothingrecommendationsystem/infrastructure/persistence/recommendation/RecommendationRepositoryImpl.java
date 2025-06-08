@@ -118,6 +118,13 @@ public class RecommendationRepositoryImpl implements IRecommendationRepository {
         return recommendations;
     }
 
+    @Override
+    public void deleteAllByPieceId(Long pieceId) {
+        List<RecommendationEntity> toDelete = recommendationRepository.findAllByPieceId(pieceId);
+        recommendationRepository.deleteAll(toDelete);
+    }
+
+
 
 }
 

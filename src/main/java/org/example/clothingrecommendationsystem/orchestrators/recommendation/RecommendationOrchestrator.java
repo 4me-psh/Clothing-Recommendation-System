@@ -93,4 +93,9 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
         return recommendationRepository.getAllByPersonEntityIdAndFavorite(id);
     }
 
+    @Override
+    public void deleteAllByPieceId(Long pieceId) {
+        recommendationRepository.deleteAllByPieceId(pieceId);
+    }
+
 }
