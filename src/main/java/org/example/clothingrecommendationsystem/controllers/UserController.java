@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @Operation(summary = "Add a new User", description = "Adds a new User")
-    @PostMapping
+    @PostMapping(produces = "application/json; charset=UTF-8")
     @InternalOnly
     public ResponseEntity<UserDto> createUser(@RequestBody CreateUserDto userDto) {
         User userToCreate = modelMapper.map(userDto, User.class);
@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @Operation(summary = "Get User by Id", description = "Gets the User by their Id")
-    @GetMapping("/{id}")
+    @GetMapping(path="/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         User entity = userOrchestrator.getById(id);
         UserDto userDto = modelMapper.map(entity, UserDto.class);
@@ -76,7 +76,7 @@ public class UserController {
     }
 
     @Operation(summary = "Get User by Email", description = "Gets User by their Email")
-    @GetMapping("/email/{email}")
+    @GetMapping(path ="/email/{email}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         User entity = userOrchestrator.getByEmail(email);
         UserDto userDto = modelMapper.map(entity, UserDto.class);

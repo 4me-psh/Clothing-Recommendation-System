@@ -21,7 +21,7 @@ public class GeneratedImageHandler implements IGeneratedImageHandler {
 
     @Override
     public String addGeneratedImage(String base64Image) {
-        String fileName = UUID.randomUUID() + "png";
+        String fileName = UUID.randomUUID() + ".png";
         Path path = Paths.get(uploadDir, fileName);
         try {
             byte[] decodedImage = Base64.getDecoder().decode(base64Image);

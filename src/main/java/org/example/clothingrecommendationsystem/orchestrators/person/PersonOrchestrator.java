@@ -49,7 +49,9 @@ public class PersonOrchestrator implements IPersonOrchestrator {
     @Override
     public Person delete(Long id) {
         Person existingPerson = getById(id);
-        personPhotoHandler.deletePiecePhoto(existingPerson.getPathToPerson());
+        if(existingPerson.getPathToPerson()!=null && !existingPerson.getPathToPerson().isEmpty()) {
+            personPhotoHandler.deletePiecePhoto(existingPerson.getPathToPerson());
+        }
         personRepository.delete(id);
         return existingPerson;
     }
@@ -68,7 +70,9 @@ public class PersonOrchestrator implements IPersonOrchestrator {
 
     @Override
     public Person editWithPhoto(Person entityToUpdate, MultipartFile file) {
-        personPhotoHandler.deletePiecePhoto(entityToUpdate.getPathToPerson());
+        if(entityToUpdate.getPathToPerson()!=null && !entityToUpdate.getPathToPerson().isEmpty()) {
+            personPhotoHandler.deletePiecePhoto(entityToUpdate.getPathToPerson());
+        }
         String pathToPersonPhoto = personPhotoHandler.addPiecePhoto(file);
         entityToUpdate.setPathToPerson(pathToPersonPhoto);
         return edit(entityToUpdate);

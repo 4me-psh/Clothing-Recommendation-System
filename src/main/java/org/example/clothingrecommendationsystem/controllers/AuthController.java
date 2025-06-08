@@ -46,7 +46,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping(path = "/register", produces = "application/json; charset=UTF-8")
     public ResponseEntity<?> register(@RequestBody CreateUserDto request) {
 
         HttpHeaders headers = new HttpHeaders();

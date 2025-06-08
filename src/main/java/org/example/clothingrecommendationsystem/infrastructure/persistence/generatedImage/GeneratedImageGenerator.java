@@ -1,5 +1,8 @@
 package org.example.clothingrecommendationsystem.infrastructure.persistence.generatedImage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.clothingrecommendationsystem.model.generatedimage.IGeneratedImageGenerator;
 import org.example.clothingrecommendationsystem.model.person.Person;
 import org.example.clothingrecommendationsystem.model.pieceofclothes.PieceOfClothes;
@@ -24,8 +27,7 @@ public class GeneratedImageGenerator implements IGeneratedImageGenerator {
     private final RestTemplate rest = new RestTemplate();
 
     @Override
-    public String generateImage(List<PieceOfClothes> piecesOfClothes,
-                                Person person) {
+    public String generateImage(List<PieceOfClothes> piecesOfClothes, Person person) {
 
         List<String> clothesPaths = piecesOfClothes.stream()
                 .map(PieceOfClothes::getPathToPhoto)
@@ -37,17 +39,17 @@ public class GeneratedImageGenerator implements IGeneratedImageGenerator {
             personBlock = person.getPathToPerson();
         } else {
             Map<String, Object> attrs = new HashMap<>();
-            attrs.put("gender",     person.getGender().name().toLowerCase());
-            attrs.put("skinTone",   person.getSkinTone().name().toLowerCase());
-            attrs.put("hairColor",  person.getHairColor());
-            attrs.put("height",     person.getHeight());
-            attrs.put("age",        person.getAge());
+            attrs.put("gender", person.getGender().name().toLowerCase());
+            attrs.put("skinTone", person.getSkinTone().name().toLowerCase());
+            attrs.put("hairColor", person.getHairColor());
+            attrs.put("height", person.getHeight());
+            attrs.put("age", person.getAge());
             personBlock = attrs;
         }
 
         Map<String, Object> body = new HashMap<>();
         body.put("image_paths", clothesPaths);
-        body.put("person",      personBlock);
+        body.put("person", personBlock);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -55,11 +57,19 @@ public class GeneratedImageGenerator implements IGeneratedImageGenerator {
 
         String url = base_url + "/image_generation/generate";
 
-        ResponseEntity<String> resp =
-                rest.postForEntity(url, entity, String.class);
+        ResponseEntity<String> resp = rest.postForEntity(url, entity, String.class);
 
-        return resp.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode json;
+        try {
+            json = mapper.readTree(resp.getBody());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return json.get("base64_image").asText();
     }
+
 
     public String generateImageStable(List<PieceOfClothes> clothes, Person person) {
 

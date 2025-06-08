@@ -2,6 +2,7 @@ package org.example.clothingrecommendationsystem.infrastructure.persistence.gene
 
 
 import org.example.clothingrecommendationsystem.infrastructure.persistence.jparepositories.postgresql.GeneratedImageRepository;
+import org.example.clothingrecommendationsystem.infrastructure.persistence.person.PersonEntity;
 import org.example.clothingrecommendationsystem.model.generatedimage.GeneratedImage;
 import org.example.clothingrecommendationsystem.model.generatedimage.IGeneratedImageRepository;
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,7 @@ public class GeneratedImageRepositoryImpl implements IGeneratedImageRepository {
     @Override
     public GeneratedImage create(GeneratedImage entityToCreate) {
         GeneratedImageEntity pieceEntity = modelMapper.map(entityToCreate, GeneratedImageEntity.class);
+        pieceEntity.setPersonEntity(modelMapper.map(entityToCreate.getPerson(), PersonEntity.class));
         GeneratedImageEntity createdPieceEntity = generatedImageRepository.save(pieceEntity);
         return modelMapper.map(createdPieceEntity, GeneratedImage.class);
     }

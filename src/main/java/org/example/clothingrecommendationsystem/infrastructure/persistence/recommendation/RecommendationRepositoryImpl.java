@@ -1,5 +1,9 @@
 package org.example.clothingrecommendationsystem.infrastructure.persistence.recommendation;
+import org.example.clothingrecommendationsystem.infrastructure.persistence.generatedImage.GeneratedImageEntity;
 import org.example.clothingrecommendationsystem.infrastructure.persistence.jparepositories.postgresql.RecommendationRepository;
+import org.example.clothingrecommendationsystem.infrastructure.persistence.person.PersonEntity;
+import org.example.clothingrecommendationsystem.infrastructure.persistence.pieceofclothes.PieceOfClothesEntity;
+import org.example.clothingrecommendationsystem.model.generatedimage.GeneratedImage;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationRepository;
 import org.example.clothingrecommendationsystem.model.recommendation.Recommendation;
 import org.modelmapper.ModelMapper;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class RecommendationRepositoryImpl implements IRecommendationRepository {
@@ -35,13 +40,30 @@ public class RecommendationRepositoryImpl implements IRecommendationRepository {
     @Override
     public Recommendation getById(Long id) {
         RecommendationEntity recommendationEntity = recommendationRepository.findById(id).orElse(null);
-        return modelMapper.map(recommendationEntity, Recommendation.class);
+        Recommendation recommendation = modelMapper.map(recommendationEntity, Recommendation.class);
+        assert recommendationEntity != null;
+        List<GeneratedImage> mappedImages = recommendationEntity.getGeneratedImageEntities().stream()
+                .map(piece -> modelMapper.map(piece, GeneratedImage.class))
+                .toList();
+        recommendation.setGeneratedImages(mappedImages);
+        return recommendation;
     }
 
     @Override
     public Recommendation create(Recommendation entityToCreate) {
+
+        List<PieceOfClothesEntity> mappedPieces = entityToCreate.getRecommendedClothes().stream()
+                .map(piece -> modelMapper.map(piece, PieceOfClothesEntity.class))
+                .toList();
+
         RecommendationEntity recommendationEntity = modelMapper.map(entityToCreate, RecommendationEntity.class);
+
+        recommendationEntity.setPersonEntity(modelMapper.map(entityToCreate.getPerson(), PersonEntity.class));
+        recommendationEntity.setRecommendedClothesEntities(mappedPieces);
+
+
         RecommendationEntity createdRecommendationEntity = recommendationRepository.save(recommendationEntity);
+
         return modelMapper.map(createdRecommendationEntity, Recommendation.class);
     }
 
@@ -69,6 +91,21 @@ public class RecommendationRepositoryImpl implements IRecommendationRepository {
             recommendations.add(modelMapper.map(recommendationEntity, Recommendation.class));
         }
         return recommendations;
+    }
+
+    @Override
+    public Recommendation generateImage(Recommendation entityToAddImage) {
+        RecommendationEntity editedEntity = recommendationRepository.findById(entityToAddImage.getId()).orElse(null);
+        assert editedEntity != null;
+        modelMapper.map(entityToAddImage, editedEntity);
+        List<GeneratedImageEntity> mappedImages = entityToAddImage.getGeneratedImages().stream()
+                .map(piece -> modelMapper.map(piece, GeneratedImageEntity.class))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        editedEntity.setGeneratedImageEntities(mappedImages);
+        recommendationRepository.save(editedEntity);
+
+        return modelMapper.map(editedEntity, Recommendation.class);
     }
 
     @Override

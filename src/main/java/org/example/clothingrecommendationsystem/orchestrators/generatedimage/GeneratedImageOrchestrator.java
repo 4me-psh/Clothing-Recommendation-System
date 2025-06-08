@@ -47,10 +47,14 @@ public class GeneratedImageOrchestrator implements IGeneratedImageOrchestrator {
     }
 
     @Override
+    public String deleteFromDisc(String path) {
+        return generatedImageHandler.deleteGeneratedImage(path);
+    }
+
+    @Override
     public GeneratedImage generateImage(List<PieceOfClothes> piecesOfClothesToGenerate, Person personToGenerate) {
         String base64Image = generatedImageGenerator.generateImage(piecesOfClothesToGenerate, personToGenerate);
         String pathToImage = generatedImageHandler.addGeneratedImage(base64Image);
-
         GeneratedImage generatedImage = new GeneratedImage();
         generatedImage.setPerson(personToGenerate);
         generatedImage.setPathToImage(pathToImage);

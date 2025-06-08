@@ -10,6 +10,7 @@ import org.example.clothingrecommendationsystem.orchestrators.person.dto.PersonD
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +46,7 @@ public class PersonController {
     }
 
     @Operation(summary = "Add a new Person", description = "Adds a new Person")
-    @PostMapping
+    @PostMapping(produces = "application/json; charset=UTF-8")
     public ResponseEntity<PersonDto> createPerson(@RequestBody CreatePersonDto personDto) {
         Person personToCreate = modelMapper.map(personDto, Person.class);
         Person createdPerson = personOrchestrator.create(personToCreate);
@@ -54,7 +55,7 @@ public class PersonController {
     }
 
     @Operation(summary = "Get Person by Id", description = "Gets the Person by their Id")
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", produces = "application/json; charset=UTF-8")
     public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {
         Person entity = personOrchestrator.getById(id);
         PersonDto personDto = modelMapper.map(entity, PersonDto.class);
@@ -79,9 +80,9 @@ public class PersonController {
     }
 
     @Operation(summary = "Add a new Person with photo", description = "Adds a new Person photo")
-    @PostMapping
-    public ResponseEntity<PersonDto> createPersonWithPhoto(@RequestBody CreatePersonDto personDto,
-                                                  @RequestParam MultipartFile file) {
+    @PostMapping(path ="/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
+    public ResponseEntity<PersonDto> createPersonWithPhoto(@RequestPart("personDto") CreatePersonDto personDto,
+                                                           @RequestPart("file") MultipartFile file) {
         Person personToCreate = modelMapper.map(personDto, Person.class);
         Person createdPerson = personOrchestrator.createWithPhoto(personToCreate, file);
         PersonDto createdPersonDto = modelMapper.map(createdPerson, PersonDto.class);
@@ -89,13 +90,21 @@ public class PersonController {
     }
 
     @Operation(summary = "Update Person with Photo", description = "Updates the Person with Photo by their Id")
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updatePerson(@PathVariable Long id, @RequestBody EditPersonDto personDto,
-                                               MultipartFile file) {
+    @PutMapping(path ="/photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json; charset=UTF-8")
+    public ResponseEntity<String> updatePersonWithPhoto(@PathVariable Long id, @RequestPart("personDto") EditPersonDto personDto,
+                                                        @RequestPart("file") MultipartFile file) {
         Person editEntity = personOrchestrator.getById(id);
         modelMapper.map(personDto, editEntity);
         personOrchestrator.editWithPhoto(editEntity, file);
         return ResponseEntity.ok("ok edit");
+    }
+
+    @Operation(summary = "Get Person by User Id", description = "Gets the Person by User Id")
+    @GetMapping(path = "/user/{id}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<PersonDto> getPersonByUserId(@PathVariable Long id) {
+        Person entity = personOrchestrator.getByUserId(id);
+        PersonDto personDto = modelMapper.map(entity, PersonDto.class);
+        return ResponseEntity.ok(personDto);
     }
 
 }

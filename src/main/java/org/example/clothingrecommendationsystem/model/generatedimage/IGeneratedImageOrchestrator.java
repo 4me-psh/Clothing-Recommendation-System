@@ -11,6 +11,7 @@ public interface IGeneratedImageOrchestrator {
     GeneratedImage create(GeneratedImage entityToCreate);
     GeneratedImage edit(GeneratedImage entityToUpdate);
     GeneratedImage delete(Long id);
+    String deleteFromDisc(String path);
     GeneratedImage generateImage(List<PieceOfClothes> piecesOfClothesToGenerate,
                                  Person personToGenerate);
 }

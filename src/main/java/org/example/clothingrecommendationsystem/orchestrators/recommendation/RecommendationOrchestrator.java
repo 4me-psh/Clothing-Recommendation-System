@@ -1,5 +1,6 @@
 package org.example.clothingrecommendationsystem.orchestrators.recommendation;
 
+import org.example.clothingrecommendationsystem.model.generatedimage.GeneratedImage;
 import org.example.clothingrecommendationsystem.model.generatedimage.IGeneratedImageOrchestrator;
 import org.example.clothingrecommendationsystem.model.person.IPersonOrchestrator;
 import org.example.clothingrecommendationsystem.model.recommendation.IRecommendationGenerator;
@@ -9,7 +10,9 @@ import org.example.clothingrecommendationsystem.model.recommendation.Recommendat
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RecommendationOrchestrator implements IRecommendationOrchestrator {
@@ -54,9 +57,21 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
     @Override
     public Recommendation delete(Long id) {
         Recommendation existingRecommendation = getById(id);
+
+        List<GeneratedImage> imagesToDelete = Optional.ofNullable(existingRecommendation.getGeneratedImages())
+                .orElse(List.of());
+
+        for (GeneratedImage image : imagesToDelete) {
+            if (image.getId() != null) {
+                generatedImageOrchestrator.deleteFromDisc(image.getPathToImage());
+            }
+        }
+
         recommendationRepository.delete(id);
+
         return existingRecommendation;
     }
+
 
     @Override
     public List<Recommendation> getAllByPersonId(Long id) {
@@ -65,8 +80,12 @@ public class RecommendationOrchestrator implements IRecommendationOrchestrator {
 
     @Override
     public Recommendation generateImage(Recommendation entityToGenerate) {
-        entityToGenerate.setGeneratedImages(List.of(generatedImageOrchestrator.generateImage(entityToGenerate.getRecommendedClothes(), entityToGenerate.getPerson())));
-        return edit(entityToGenerate);
+        ArrayList<GeneratedImage> generatedImages = new ArrayList<>(
+                Optional.ofNullable(entityToGenerate.getGeneratedImages()).orElse(List.of())
+        );
+        generatedImages.add(generatedImageOrchestrator.generateImage(entityToGenerate.getRecommendedClothes(), entityToGenerate.getPerson()));
+        entityToGenerate.setGeneratedImages(generatedImages);
+        return recommendationRepository.generateImage(entityToGenerate);
     }
 
     @Override

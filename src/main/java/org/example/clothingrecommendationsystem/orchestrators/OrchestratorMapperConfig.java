@@ -5,6 +5,7 @@ import org.example.clothingrecommendationsystem.model.recommendation.Recommendat
 import org.example.clothingrecommendationsystem.model.user.User;
 import org.example.clothingrecommendationsystem.orchestrators.person.dto.CreatePersonDto;
 import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.CreateRecommendationDto;
+import org.example.clothingrecommendationsystem.orchestrators.recommendation.dto.RecommendationDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.CreateUserDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.EditUserDto;
 import org.example.clothingrecommendationsystem.orchestrators.user.dto.UserDto;
@@ -70,6 +71,14 @@ public class OrchestratorMapperConfig {
                 skip(destination.getCreatedBy());
                 skip(destination.getUpdatedBy());
 
+
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<Recommendation, RecommendationDto>() {
+            @Override
+            protected void configure() {
+                map().setPersonId(source.getPerson().getId());
 
             }
         });

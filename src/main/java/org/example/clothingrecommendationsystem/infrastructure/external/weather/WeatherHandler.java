@@ -7,6 +7,7 @@ import org.example.clothingrecommendationsystem.model.weather.IWeatherHandler;
 import org.example.clothingrecommendationsystem.model.weather.Weather;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -81,14 +82,24 @@ public class WeatherHandler implements IWeatherHandler {
             throw new RuntimeException("No weather data found for coordinates: " + coordinates);
         }
 
+        System.out.println(body);
+
         Weather weather = getWeather(body);
 
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = auth.getPrincipal();
+
+        String email = "";
+
+        if (principal instanceof User user) {
+            email = user.getEmail();
+        }
+
         User user = userOrchestrator.getByEmail(email);
+
         Long userId = user.getId();
 
         weatherCacheService.put(userId, weather);
-        System.out.println("CACHE SAVED");
 
         return weather;
     }

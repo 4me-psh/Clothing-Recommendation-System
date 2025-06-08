@@ -26,10 +26,10 @@ public class RecommendationGenerator implements IRecommendationGenerator {
     private static final Random RNG = ThreadLocalRandom.current();
 
     private static final Set<String> FIRST_LAYER = Set.of(
-            "майка", "футболка", "лонгслів", "топ", "теніска", "сорочка"
+            "майка", "топ"
     );
     private static final Set<String> SECOND_LAYER = Set.of(
-            "сорочка"
+            "сорочка", "футболка", "теніска", "лонгслів", "вишиванка"
     );
 
     @Autowired
@@ -64,13 +64,15 @@ public class RecommendationGenerator implements IRecommendationGenerator {
         addBestUnique(outfit, byCat.get(PieceOfClothes.PieceCategory.Footwear), req, true, true, now, palette);
 
         boolean precip = Optional.ofNullable(w.getWeatherCondition()).map(String::toLowerCase).map(s -> s.contains("rain") || s.contains("snow")).orElse(false);
+
+        System.out.println(precip);
         boolean needOuter = precip || w.getFeelsLikeTemperature() < 10;
 
         boolean randomOuterAllowed;
         switch (now) {
             case Warm, Hot, ExtremeHeat -> randomOuterAllowed = false;
-            case MildWarm               -> randomOuterAllowed = innerCount(outfit) < 3;
-            default                     -> randomOuterAllowed = true;
+            case MildWarm -> randomOuterAllowed = innerCount(outfit) < 3;
+            default -> randomOuterAllowed = true;
         }
 
         List<PieceOfClothes> outers = byCat.get(PieceOfClothes.PieceCategory.Outerlayer);
@@ -117,14 +119,41 @@ public class RecommendationGenerator implements IRecommendationGenerator {
         PieceOfClothes base = pickBest(List.of(basePool.get(RNG.nextInt(basePool.size()))), req, true, true, now, palette);
         addAndLearn(outfit, base, palette);
 
+        Set<Tier> usedTiers = EnumSet.of(tierOf(base));
+
         int min, max;
-        if(t < 10){ min = 3; max = 3; } else if (t < 15)  { min = 2; max = 3; } else if (t < 20)  { min = 1; max = 3; } else if (t < 25)  { min = 1; max = 2; } else{ min = 1; max = 2; }
+        if (t < 10) {
+            min = 3;
+            max = 3;
+        } else if (t < 15) {
+            min = 2;
+            max = 3;
+        } else if (t < 20) {
+            min = 1;
+            max = 3;
+        } else if (t < 25) {
+            min = 1;
+            max = 2;
+        } else {
+            min = 1;
+            max = 2;
+        }
 
         List<PieceOfClothes> pool = new ArrayList<>(inners);
         pool.remove(base);
         Collections.shuffle(pool, RNG);
-        while (innerCount(outfit) < min && !pool.isEmpty()) addAndLearn(outfit, pool.removeFirst(), palette);
-        for (PieceOfClothes pc : pool) { if (innerCount(outfit) >= max) break; if (RNG.nextDouble() < 0.5) addAndLearn(outfit, pc, palette); }
+
+        while (innerCount(outfit) < min && !pool.isEmpty()) {
+            PieceOfClothes cand = pool.removeFirst();
+            if (usedTiers.add(tierOf(cand))) addAndLearn(outfit, cand, palette);
+        }
+
+        for (PieceOfClothes pc : pool) {
+            if (innerCount(outfit) >= max) break;
+            if (RNG.nextDouble() < 0.5 && usedTiers.add(tierOf(pc))) {
+                addAndLearn(outfit, pc, palette);
+            }
+        }
     }
 
     private static long innerCount(List<PieceOfClothes> list) {
@@ -136,11 +165,15 @@ public class RecommendationGenerator implements IRecommendationGenerator {
         if (acc == null || acc.isEmpty()) return;
         acc.stream().filter(a -> precip && Optional.ofNullable(a.getName()).map(String::toLowerCase).filter(n -> n.contains("парасолька") || n.contains("umbrella")).isPresent())
                 .findFirst().ifPresent(a -> addAndLearn(outfit, a, palette));
-        List<PieceOfClothes> pool = new ArrayList<>(acc);
+        List<PieceOfClothes> pool = acc.stream()
+                .filter(a -> styleOk(a, req.style))
+                .collect(Collectors.toCollection(ArrayList::new));
         pool.removeAll(outfit);
         Collections.shuffle(pool, RNG);
         int added = 0;
-        for (PieceOfClothes pc : pool) { if (RNG.nextDouble() < 0.5 && addAndLearn(outfit, pc, palette) && ++added == 2) break; }
+        for (PieceOfClothes pc : pool) {
+            if (RNG.nextDouble() < 0.5 && addAndLearn(outfit, pc, palette) && ++added == 2) break;
+        }
     }
 
     private void maybeAddHeadwear(List<PieceOfClothes> head, List<PieceOfClothes> outfit,
@@ -195,7 +228,8 @@ public class RecommendationGenerator implements IRecommendationGenerator {
             int score = 0;
             int dist = pc.getTemperatureCategories().stream().mapToInt(c -> Math.abs(c.ordinal() - now.ordinal())).min().orElse(5);
             score += dist * 30;
-            if (req.style != null && (pc.getStyles() == null || !pc.getStyles().contains(req.style))) score += strictStyle ? 300 : 30;
+            if (req.style != null && (pc.getStyles() == null || !pc.getStyles().contains(req.style)))
+                score += strictStyle ? 300 : 30;
             if (req.color != null) {
                 List<String> pal = BASE_PALETTE.getOrDefault(req.color, List.of(req.color));
                 Set<String> all = collectColors(pc);
@@ -252,4 +286,19 @@ public class RecommendationGenerator implements IRecommendationGenerator {
 
     private record ParsedRequest(PieceOfClothes.Style style, String color) {
     }
+
+    enum Tier {FIRST, SECOND, OTHER}
+
+    private Tier tierOf(PieceOfClothes pc) {
+        String name = Optional.ofNullable(pc.getName()).orElse("").toLowerCase(Locale.ROOT);
+        if (FIRST_LAYER.stream().anyMatch(name::contains)) return Tier.FIRST;
+        if (SECOND_LAYER.stream().anyMatch(name::contains)) return Tier.SECOND;
+        return Tier.OTHER;
+    }
+
+    private boolean styleOk(PieceOfClothes pc, PieceOfClothes.Style need) {
+        if (need == null) return true;
+        return pc.getStyles() != null && pc.getStyles().contains(need);
+    }
+
 }

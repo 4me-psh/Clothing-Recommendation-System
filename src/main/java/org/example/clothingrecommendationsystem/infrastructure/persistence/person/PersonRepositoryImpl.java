@@ -1,6 +1,7 @@
 package org.example.clothingrecommendationsystem.infrastructure.persistence.person;
 
 import org.example.clothingrecommendationsystem.infrastructure.persistence.jparepositories.postgresql.PersonRepository;
+import org.example.clothingrecommendationsystem.infrastructure.persistence.user.UserEntity;
 import org.example.clothingrecommendationsystem.model.person.IPersonRepository;
 import org.example.clothingrecommendationsystem.model.person.Person;
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,7 @@ public class PersonRepositoryImpl implements IPersonRepository {
     @Override
     public Person create(Person entityToCreate) {
         PersonEntity personEntity = modelMapper.map(entityToCreate, PersonEntity.class);
+        personEntity.setUserEntity(modelMapper.map(entityToCreate.getUser(), UserEntity.class));
         PersonEntity createdPersonEntity = personRepository.save(personEntity);
         return modelMapper.map(createdPersonEntity, Person.class);
     }
@@ -65,7 +67,9 @@ public class PersonRepositoryImpl implements IPersonRepository {
 
     @Override
     public Person getByUserId(Long userId) {
-        PersonEntity personEntity = personRepository.findById(userId).orElse(null);
+        System.out.println(userId);
+        PersonEntity personEntity = personRepository.findByUserEntity_Id(userId);
+        System.out.println(personRepository);
         assert personEntity != null;
         return modelMapper.map(personEntity, Person.class);
     }
